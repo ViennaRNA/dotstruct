@@ -167,7 +167,7 @@ function FornaContainer(element, passedOptions) {
         var options = {"uids": uids};
         var newRNAJson = self.createInitialLayout(newStructure, options);
 
-        var gnodes = vis_nodes.selectAll('g.gnode').data(newRNAJson.nodes, node_key);
+        var gnodes = self.vis_nodes.selectAll('g.gnode').data(newRNAJson.nodes, node_key);
         var duration = self.options.transitionDuration;
 
         console.log('duration:', duration);
@@ -477,19 +477,23 @@ function FornaContainer(element, passedOptions) {
     }
 
     self.setOutlineColor = function(color) {
-        var nodes = vis_nodes.selectAll('g.gnode').select('[node_type=nucleotide]');
+        var nodes = self.vis_nodes.selectAll('g.gnode').select('[node_type=nucleotide]');
         nodes.style('fill', color);
     }
 
+    self.highlightNode = function(nodeNum) {
+            console.log('nodeNum:', nodeNum);
+    }
+
     self.changeColorScheme = function(newColorScheme) {
-        var protein_nodes = vis_nodes.selectAll('[node_type=protein]');
+        var protein_nodes = self.vis_nodes.selectAll('[node_type=protein]');
 
         protein_nodes.classed("protein", true)
                     .attr('r', function(d) { return d.radius; });
 
-        var gnodes = vis_nodes.selectAll('g.gnode');
-        var circles = vis_nodes.selectAll('g.gnode').selectAll('circle');
-        var nodes = vis_nodes.selectAll('g.gnode').select('[node_type=nucleotide]');
+        var gnodes = self.vis_nodes.selectAll('g.gnode');
+        var circles = self.vis_nodes.selectAll('g.gnode').selectAll('circle');
+        var nodes = self.vis_nodes.selectAll('g.gnode').select('[node_type=nucleotide]');
         self.colorScheme = newColorScheme;
 
 
@@ -629,17 +633,17 @@ function FornaContainer(element, passedOptions) {
 
     var vis = svg_graph.append("svg:g");
     var vis_links = vis.append("svg:g");
-    var vis_nodes = vis.append("svg:g");
+    self.vis_nodes = vis.append("svg:g");
 
     self.brusher = d3.svg.brush()
                 .x(xScale)
                 .y(yScale)
                .on("brushstart", function(d) {
-                   var gnodes = vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
+                   var gnodes = self.vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
                    gnodes.each(function(d) { d.previouslySelected = ctrl_keydown && d.selected; });
                })
                .on("brush", function() {
-                   var gnodes = vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
+                   var gnodes = self.vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
                    var extent = d3.event.target.extent();
 
                    gnodes.classed("selected", function(d) {
@@ -661,7 +665,7 @@ function FornaContainer(element, passedOptions) {
       brush.select('.background').style('cursor', 'auto');
 
     function zoomstart() {
-        var node = vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
+        var node = self.vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
         node.each(function(d) {
                 d.selected = false;
                 d.previouslySelected = false;
@@ -772,7 +776,7 @@ function FornaContainer(element, passedOptions) {
     var ctrl_keydown = false;
 
     function selectedNodes(mouseDownNode) {
-        var gnodes = vis_nodes.selectAll('g.gnode');
+        var gnodes = self.vis_nodes.selectAll('g.gnode');
 
         if (ctrl_keydown) {
             return gnodes.filter(function(d) { return d.selected; });
@@ -789,7 +793,7 @@ function FornaContainer(element, passedOptions) {
 
       if (!d.selected && !ctrl_keydown) {
           // if this node isn't selected, then we have to unselect every other node
-            var node = vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
+            var node = self.vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
             node.classed("selected", function(p) { return p.selected =  self.options.applyForce && (p.previouslySelected = false); })
           }
 
@@ -1031,7 +1035,7 @@ function FornaContainer(element, passedOptions) {
 
         if (!ctrl_keydown) {
             //if the shift key isn't down, unselect everything
-            var node = vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
+            var node = self.vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
             node.classed("selected", function(p) { return p.selected =  self.options.applyForce && (p.previouslySelected = false); });
         }
 
@@ -1078,7 +1082,7 @@ function FornaContainer(element, passedOptions) {
     node_mousedown = function(d) {
       if (!d.selected && !ctrl_keydown) {
           // if this node isn't selected, then we have to unselect every other node
-            var node = vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
+            var node = self.vis_nodes.selectAll('g.gnode').selectAll('.outline_node');
             node.classed("selected", function(p) { return p.selected =  p.previouslySelected = false; })
           }
 
@@ -1175,13 +1179,13 @@ function FornaContainer(element, passedOptions) {
         // Background
         rect.classed("transparent", !self.displayParameters.displayBackground);
         // Numbering
-        vis_nodes.selectAll('[node_type=label]').classed("transparent", !self.displayParameters.displayNumbering);
-        vis_nodes.selectAll('[label_type=label]').classed("transparent", !self.displayParameters.displayNumbering);
+        self.vis_nodes.selectAll('[node_type=label]').classed("transparent", !self.displayParameters.displayNumbering);
+        self.vis_nodes.selectAll('[label_type=label]').classed("transparent", !self.displayParameters.displayNumbering);
         vis_links.selectAll('[link_type=label_link]').classed("transparent", !self.displayParameters.displayNumbering);
         // Node Outline
         svg.selectAll('circle').classed("hidden_outline", !self.displayParameters.displayNodeOutline);
         // Node Labels
-        vis_nodes.selectAll('[label_type=nucleotide]').classed("transparent", !self.displayParameters.displayNodeLabel);
+        self.vis_nodes.selectAll('[label_type=nucleotide]').classed("transparent", !self.displayParameters.displayNodeLabel);
         // Links
         svg.selectAll("[link_type=real],[link_type=basepair],[link_type=backbone],[link_type=pseudoknot],[link_type=protein_chain],[link_type=chain_chain]").classed("transparent", !self.displayParameters.displayLinks);
         // Pseudoknot Links
@@ -1248,6 +1252,7 @@ function FornaContainer(element, passedOptions) {
         .classed('noselect', true)
         .classed('gnode', true)
         .attr('struct_name', function(d) { return d.struct_name; })
+        .attr('nuc_num', function(d) { return d.num; })
         .attr("transform", function(d) { 
             if (typeof d.x != 'undefined' && typeof d.y != 'undefined')
                 return 'translate(' + [d.x, d.y] + ')'; 
@@ -1353,7 +1358,7 @@ function FornaContainer(element, passedOptions) {
             domain = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
             var colors = d3.scale.category10().domain(domain);
 
-            var gnodes = vis_nodes.selectAll('g.gnode')
+            var gnodes = self.vis_nodes.selectAll('g.gnode')
             .data(self.graph.nodes, node_key);
             //.attr('pointer-events', 'all');
 

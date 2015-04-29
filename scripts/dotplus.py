@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import collections as col
 import forgi.utilities.stuff as fus
 import itertools as it
 import json
@@ -62,11 +63,16 @@ def main():
 
     counter = 0
     struct_dict = {}
+    base_probs = col.defaultdict(float)
+
     for i,j in it.combinations(range(1, len(seq)+1), 2):
         prob = RNA.doubleP_getitem(prob_matrix, 
                                    RNA.intP_getitem(RNA.cvar.iindx, i) - j)
 
-        if prob > .04:
+        base_probs[i] += prob
+        base_probs[j] += prob
+
+        if prob > .08:
             struct, energy = bp_to_seq[(i,j)]
             pp = math.exp((pfe - (energy / 100.)) / .616310776)
 
@@ -80,10 +86,11 @@ def main():
             print >>sys.stderr, "ix:", index, "struct:", struct, "pp:", pp
             bps += [{"i": i, "j": j, "p": math.sqrt(prob), "ix": index}]
 
+
     structs = struct_dict.values()
     structs.sort(key=lambda x: -x[1])
-    structs = [{"struct": s[0], "sprob": s[1], "ix": s[2]} for s in structs]
-    print json.dumps({"structs": structs, "bps": bps}, indent=2)
+    structs = [{"struct": st[0], "sprob": st[1], "ix": st[2]} for st in structs]
+    print json.dumps({"seq": seq, "structs": structs, "bps": bps, "baseProbs": base_probs.items()}, indent=2)
 
 
 if __name__ == '__main__':
