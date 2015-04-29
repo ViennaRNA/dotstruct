@@ -2,6 +2,7 @@
 
 import forgi.utilities.stuff as fus
 import itertools as it
+import json
 import math
 import RNA
 import sys
@@ -56,14 +57,33 @@ def main():
 
         #print s.structure, s.energy
 
-    print "\t".join(['i', 'j', 'bp_prob', 'struct', 'struct_prob'])
+    bps = []
+    structs = []
 
+    counter = 0
+    struct_dict = {}
     for i,j in it.combinations(range(1, len(seq)+1), 2):
         prob = RNA.doubleP_getitem(prob_matrix, 
                                    RNA.intP_getitem(RNA.cvar.iindx, i) - j)
-        if prob > 1e-5:
+
+        if prob > .04:
             struct, energy = bp_to_seq[(i,j)]
-            print "\t".join(map(str, [i, j, math.sqrt(prob), struct, math.exp((pfe - (energy / 100.)) / .616310776)]))
+            pp = math.exp((pfe - (energy / 100.)) / .616310776)
+
+            if struct not in struct_dict:
+                struct_dict[struct] = (struct, pp, counter)
+                index = counter
+                counter += 1
+            else:
+                index = struct_dict[struct][2]
+
+            print >>sys.stderr, "ix:", index, "struct:", struct, "pp:", pp
+            bps += [{"i": i, "j": j, "p": math.sqrt(prob), "ix": index}]
+
+    structs = struct_dict.values()
+    structs.sort(key=lambda x: -x[1])
+    structs = [{"struct": s[0], "sprob": s[1], "ix": s[2]} for s in structs]
+    print json.dumps({"structs": structs, "bps": bps}, indent=2)
 
 
 if __name__ == '__main__':
