@@ -179,7 +179,7 @@ function FornaContainer(element, passedOptions) {
             gnodes.transition().attr('transform', function(d) { 
                 return 'translate(' + [d.x, d.y] + ')'; }).duration(duration);
 
-        var links = vis_links.selectAll("line.link").data(newRNAJson.links, link_key);
+        var links = self.vis_links.selectAll("line.link").data(newRNAJson.links, link_key);
         var newNodes = self.createNewNodes(gnodes.enter())
         .attr("transform", function(d) { 
             if (typeof d.x != 'undefined' && typeof d.y != 'undefined')
@@ -625,14 +625,15 @@ function FornaContainer(element, passedOptions) {
     .attr('stroke', 'grey')
     .attr('stroke-width', 1)
     //.attr("pointer-events", "all")
-    .attr("id", "zrect");
+    .attr("id", "zrect")
+    .style('opacity', 0);
 
     var brush = svg_graph.append('g')
     .datum(function() { return {selected: false, previouslySelected: false}; })
     .attr("class", "brush");
 
     var vis = svg_graph.append("svg:g");
-    var vis_links = vis.append("svg:g");
+    self.vis_links = vis.append("svg:g");
     self.vis_nodes = vis.append("svg:g");
 
     self.brusher = d3.svg.brush()
@@ -1181,7 +1182,7 @@ function FornaContainer(element, passedOptions) {
         // Numbering
         self.vis_nodes.selectAll('[node_type=label]').classed("transparent", !self.displayParameters.displayNumbering);
         self.vis_nodes.selectAll('[label_type=label]').classed("transparent", !self.displayParameters.displayNumbering);
-        vis_links.selectAll('[link_type=label_link]').classed("transparent", !self.displayParameters.displayNumbering);
+        self.vis_links.selectAll('[link_type=label_link]').classed("transparent", !self.displayParameters.displayNumbering);
         // Node Outline
         svg.selectAll('circle').classed("hidden_outline", !self.displayParameters.displayNodeOutline);
         // Node Labels
@@ -1193,8 +1194,8 @@ function FornaContainer(element, passedOptions) {
         // Protein Links
         svg.selectAll("[link_type=protein_chain]").classed("transparent", !self.displayParameters.displayProteinLinks);
         // Fake Links
-        vis_links.selectAll("[link_type=fake]").classed("transparent", !self.options.displayAllLinks);
-        vis_links.selectAll("[link_type=fake_fake]").classed("transparent", !self.options.displayAllLinks);
+        self.vis_links.selectAll("[link_type=fake]").classed("transparent", !self.options.displayAllLinks);
+        self.vis_links.selectAll("[link_type=fake_fake]").classed("transparent", !self.options.displayAllLinks);
     };
 
     function nudge(dx, dy) {
@@ -1341,7 +1342,7 @@ function FornaContainer(element, passedOptions) {
           self.force.start();
         }
 
-        var all_links = vis_links.selectAll("line.link")
+        var all_links = self.vis_links.selectAll("line.link")
         .data(self.graph.links, link_key);
 
         all_links.attr('class', '')
@@ -1375,7 +1376,7 @@ function FornaContainer(element, passedOptions) {
             if (self.displayFakeLinks)
                 xlink = all_links;
             else
-                xlink = vis_links.selectAll("[link_type=real],[link_type=pseudoknot],[link_type=protein_chain],[link_type=chain_chain],[link_type=label_link],[link_type=backbone],[link_type=basepair],[link_type=fake],[link_type=intermolecule]");
+                xlink = self.vis_links.selectAll("[link_type=real],[link_type=pseudoknot],[link_type=protein_chain],[link_type=chain_chain],[link_type=label_link],[link_type=backbone],[link_type=basepair],[link_type=fake],[link_type=intermolecule]");
 
             xlink.on('click', link_click);
 
