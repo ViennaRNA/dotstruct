@@ -1,5 +1,5 @@
 function dotplot(element) {
-    var dim = 1200;
+    var dim = 480;
     var containers = {};
     var x, y, r;
 
