@@ -3,9 +3,9 @@ function dotplot(element) {
     var containers = {};
     var x, y, r;
 
-    var margin = {top: 60, right: 60, bottom: 60, left: 60}
-      , width = dim - margin.left - margin.right
-      , height = dim - margin.top - margin.bottom;
+    var margin = {top: 60, right: 60, bottom: 60, left: 60},
+      width = dim - margin.left - margin.right,
+      height = dim - margin.top - margin.bottom;
 
     var chartUnder = d3.select(element)
     .attr('left', 0 + 'px')
@@ -18,7 +18,7 @@ function dotplot(element) {
 	.style('height', height + margin.top + margin.bottom)
 	.attr('class', 'chartx')
     .attr('pointer-events', 'none')
-    .style('position', 'absolute')
+    .style('position', 'absolute');
     
     var treemapDiv = d3.select("#dotplot").append("div")
         .style("position", "absolute")
@@ -26,7 +26,7 @@ function dotplot(element) {
         .style("height", height + "px")
         .style("left", margin.left + "px")
         .style("top", margin.top + "px")
-        .style("opacity", 1.)
+        .style("opacity", 1);
  
     var chart = d3.select(element)
     .attr('left', 0 + 'px')
@@ -39,7 +39,7 @@ function dotplot(element) {
 	.style('height', height + margin.top + margin.bottom)
 	.attr('class', 'chartx')
     .attr('pointer-events', 'none')
-    .style('position', 'absolute')
+    .style('position', 'absolute');
 
     var highlightCircle;
 
@@ -54,19 +54,19 @@ function dotplot(element) {
 	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 	.attr('width', width)
 	.attr('height', height)
-	.attr('class', 'main')   
+	.attr('class', 'main');
 
     var mainUnder = chartUnder.append('g')
 	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 	.attr('width', width)
 	.attr('height', height)
-	.attr('class', 'main')   
+	.attr('class', 'main');
 
     function highlightPair(num1, num2) {
-        for (key in containers) {
+        for (var key in containers) {
            var container = containers[key];
            var circles  = container.options.svg.selectAll("[nuc_num='" + num1 + "'],[nuc_num='" + num2 + "']")
-            .select('.node')
+            .select('.node');
 
            circles.style('opacity', 1.0);
         }
@@ -83,9 +83,9 @@ function dotplot(element) {
 
     function unHighlight() {
         console.log('unhiglighting');
-        for (key in containers) {
+        for (var key in containers) {
             var container = containers[key];
-            var circles  = container.options.svg.selectAll(".node")
+            var circles  = container.options.svg.selectAll(".node");
 
             circles
             .style('opacity', 0.2);
@@ -101,8 +101,8 @@ function dotplot(element) {
             return;
 
         var points  = [d.num, pairingPartner];
-        points.sort(function(a,b) { return +a - +b;} )
-        console.log('points:', points)
+        points.sort(function(a,b) { return +a - +b;} );
+        console.log('points:', points);
 
         highlightCircle
         .attr('cx', x(points[1]) + x.rangeBand() / 2)
@@ -146,14 +146,14 @@ function dotplot(element) {
 
         self.data = data;
 
-        var iSet = d3.set(data.bps.map(function(d) { return +d.i; })).values()
-        var jSet = d3.set(data.bps.map(function(d) { return +d.j; })).values()
+        var iSet = d3.set(data.bps.map(function(d) { return +d.i; })).values();
+        var jSet = d3.set(data.bps.map(function(d) { return +d.j; })).values();
 
-        structIxs = data.structs.map(function(d) { return d.ix; })
+        structIxs = data.structs.map(function(d) { return d.ix; });
         color.domain(structIxs);
 
         var structLength = data.structs[0].struct.length;
-        var sequenceNumbers = Array.apply(0, Array(structLength)).map(function(x,y) { return y+1});
+        var sequenceNumbers = Array.apply(0, Array(structLength)).map(function(x,y) { return y+1; });
 
         x = d3.scale.ordinal()
                   .domain([' '].concat(sequenceNumbers).concat([' ']) )
@@ -167,7 +167,7 @@ function dotplot(element) {
                   //.domain([1, d3.max(data.bps.map(function(d) { return d.p; }))])
                   //.domain(d3.extent(data.bps.map(function(d) { return d.p; })))
                   .domain([0, 1])
-                  .range([0, x.rangeBand()])
+                  .range([0, x.rangeBand()]);
 
 
         var g = main.append("svg:g"); 
@@ -186,14 +186,14 @@ function dotplot(element) {
         .enter()
         .append("text")
         .attr('transform', function(d) { return 'translate(' + (x(d) + x.rangeBand() - 2) + ',0)rotate(-90)';})
-        .text(function(d) { return d; })
+        .text(function(d) { return d; });
 
         g.selectAll(".rightYLabel")
         .data(iSet)
         .enter()
         .append("text")
         .attr('transform', function(d) { return 'translate(' + width + "," + (y(d) + y.rangeBand() - 2) + ')';})
-        .text(function(d) { return d; })
+        .text(function(d) { return d; });
 
         
         gUnder.selectAll(".x-guide-line")
@@ -207,7 +207,7 @@ function dotplot(element) {
          .style('stroke-width', 2)
          .style('opacity', 1)
          .attr('nucPair', function(d) { return "n"; })
-         .classed('x-guide-line', true)
+         .classed('x-guide-line', true);
 
         gUnder.selectAll(".y-guide-line")
          .data(data.bps)
@@ -220,7 +220,7 @@ function dotplot(element) {
          .style('stroke-width', 2)
          .style('opacity', 1)
          .attr('nucPair', function(d) { return d.i + "-" + d.j; })
-         .classed('y-guide-line', true)
+         .classed('y-guide-line', true);
 
         g.selectAll("scatter-dots")
           .data(data.bps)
@@ -243,7 +243,7 @@ function dotplot(element) {
                   .domain(sequenceNumbers)
                   .rangeRoundBands([ 0, height ]);
 
-        var mfeBps = data.bps.filter(function(d) { return d.ix == 0; });
+        var mfeBps = data.bps.filter(function(d) { return d.ix === 0; });
 
 
         g.selectAll(".bottomXLabelMfe")
@@ -252,7 +252,7 @@ function dotplot(element) {
         .append("text")
         .attr('transform', function(d) { return 'translate(' + (x(d.i) + x.rangeBand() - 2) + ',' + height + ')rotate(-90)';})
         .attr('text-anchor', 'end')
-        .text(function(d) { return d.i; })
+        .text(function(d) { return d.i; });
 
         g.selectAll(".leftYLabelMfe")
         .data(mfeBps)
@@ -260,7 +260,7 @@ function dotplot(element) {
         .append("text")
         .attr('transform', function(d) { return 'translate(0, ' + (y(d.j) + y.rangeBand() - 2) + ')';})
         .attr('text-anchor', 'end')
-        .text(function(d) { return d.j; })
+        .text(function(d) { return d.j; });
 
         gUnder.selectAll(".x-guide-lineMfe")
          .data(mfeBps)
@@ -272,7 +272,7 @@ function dotplot(element) {
          .style('stroke', '#eee')
          .style('stroke-width', 2)
          .style('opacity', 1)
-         .classed('x-guide-lineMfe', true)
+         .classed('x-guide-lineMfe', true);
 
         gUnder.selectAll(".y-guide-lineMfe")
          .data(mfeBps)
@@ -284,7 +284,7 @@ function dotplot(element) {
          .style('stroke', '#eee')
          .style('stroke-width', 2)
          .style('opacity', 1)
-         .classed('y-guide-lineMfe', true)
+         .classed('y-guide-lineMfe', true);
 
         g.selectAll("scatter-dots-mfe")
           .data(mfeBps)
@@ -298,8 +298,8 @@ function dotplot(element) {
               .on('mouseover', rectangleMouseOver)
               .on('mouseout', rectangleMouseOut);
 
-        var seq = data.seq.split('').map(function(d, i) { return {"s": d, "i": i+1}; })
-        console.log('seq',seq)
+        var seq = data.seq.split('').map(function(d, i) { return {"s": d, "i": i+1}; });
+        console.log('seq',seq);
 
         /////////////////////////////////////////////////////////////
         g.selectAll('.topSeq')
@@ -310,11 +310,11 @@ function dotplot(element) {
             return x(d.i); 
         })
         .attr('y', -20)
-        .text(function(d) { return d.s; })
+        .text(function(d) { return d.s; });
 
 
         console.log('data', data);
-        var bpColors = d3.scale.linear().domain([0,1]).range(['white', '#888'])
+        var bpColors = d3.scale.linear().domain([0,1]).range(['white', '#888']);
 
         g.selectAll('.topProbs')
         .data(data.baseProbs)
@@ -346,7 +346,7 @@ function dotplot(element) {
             return x(d.i); 
         })
         .attr('y', height + 25)
-        .text(function(d) { return d.s; })
+        .text(function(d) { return d.s; });
 
         g.selectAll('.leftSeq')
         .data(seq)
@@ -354,7 +354,7 @@ function dotplot(element) {
         .append('text')
         .attr('x', -25)
         .attr('y', function(d) { return y(d.i) + 8; })
-        .text(function(d) { return d.s; })
+        .text(function(d) { return d.s; });
 
         g.selectAll('.rightSeq')
         .data(seq)
@@ -362,7 +362,7 @@ function dotplot(element) {
         .append('text')
         .attr('x', width + 18)
         .attr('y', function(d) { return y(d.i) + 8; })
-        .text(function(d) { return d.s; })
+        .text(function(d) { return d.s; });
 
         ////////////////////////////////////////////////////////////
         var root = {"name": "graph",
@@ -371,7 +371,7 @@ function dotplot(element) {
                     "struct": d.struct,
                     "size": +d.sprob * 100 };
                     })
-        }
+        };
 
         g.append('svg:line')
         .attr('x1', 0)
@@ -379,18 +379,13 @@ function dotplot(element) {
         .attr('x2', width)
         .attr('y2', height)
         .style('stroke', '#888')
-        .style('stroke-width', 2)
+        .style('stroke-width', 2);
 
 
         function divName(d) { 
             return "subopt" + d.name;
         }
 
-var options = {'applyForce': false, 
-        'allowPanningAndZooming': false,
-        "labelInterval":0,
-        "initialSize": [280, 280],
-        "transitionDuration": 0 }
 
     function position() {
       this.style("left", function(d) {  return d.x + "px"; })
@@ -398,6 +393,12 @@ var options = {'applyForce': false,
           .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
           .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
     }
+
+    var fornaContainerOptions = {'applyForce': false, 
+        'allowPanningAndZooming': false,
+        "labelInterval":0,
+        "initialSize": [280, 280],
+        "transitionDuration": 0 };
 
       var node = treemapDiv.datum(root).selectAll(".treemapNode")
           .data(treemap.nodes)
@@ -409,7 +410,7 @@ var options = {'applyForce': false,
           //.text(function(d) { return d.children ? null : d.name; })
           .each(function(d) { 
                   if (typeof d.struct != 'undefined') {
-                      d.container = new FornaContainer("#" + divName(d), options);
+                      d.container = new FornaContainer("#" + divName(d), fornaContainerOptions);
                       d.container.transitionRNA(d.struct);
                       d.container.setOutlineColor(color(d.name));
 
@@ -439,8 +440,8 @@ var options = {'applyForce': false,
             .selectAll('[nuc_num="' + d.j + '"]')
             .select('.node')
             .style('stroke-width', 3)
-            .style('stroke', 'black')
-        })
+            .style('stroke', 'black');
+        });
         
         });
 }
