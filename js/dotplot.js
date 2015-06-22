@@ -7,27 +7,6 @@ function dotplot(element) {
       width = dim - margin.left - margin.right,
       height = dim - margin.top - margin.bottom;
 
-    var chartUnder = d3.select(element)
-    .attr('left', 0 + 'px')
-    .attr('top', 0 + 'px')
-    .attr('width', width + 'px')
-    .attr('height', height + 'px')
-    .style('position', 'absolute')
-	.append('svg:svg')
-	.style('width', width + margin.right + margin.left)
-	.style('height', height + margin.top + margin.bottom)
-	.attr('class', 'chartx')
-    .attr('pointer-events', 'none')
-    .style('position', 'absolute');
-
-    var mainUnder = chartUnder.append('g')
-	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-	.attr('width', width)
-	.attr('height', height)
-	.attr('class', 'main');
-    
-    var gUnder = mainUnder.append("svg:g"); 
-    
     var treemapDiv = d3.select("#dotplot").append("div")
         .style("position", "absolute")
         .style("width", width + "px")
@@ -49,20 +28,14 @@ function dotplot(element) {
     .attr('pointer-events', 'none')
     .style('position', 'absolute');
 
-    var highlightCircle;
-
-    var color = d3.scale.category10();
-
-    var treemap = d3.layout.treemap()
-        .size([width, height])
-        .sticky(false)
-        .value(function(d) { return d.size; });
-
-    var main = chart.append('g')
+    var rootG = chart.append('g')
 	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-	.attr('width', width)
-	.attr('height', height)
 	.attr('class', 'main');
+
+    var gUnder = rootG.append('g');
+    var gMiddle = rootG.append('g');
+    var main = rootG.append('g');
+
 
     function highlightPair(num1, num2) {
         for (var key in containers) {
@@ -84,7 +57,6 @@ function dotplot(element) {
     }
 
     function unHighlight() {
-        console.log('unhiglighting');
         for (var key in containers) {
             var container = containers[key];
             var circles  = container.options.svg.selectAll(".node");
@@ -127,7 +99,8 @@ function dotplot(element) {
         var jSet = d3.set(data.bps.map(function(d) { return +d.j; })).values();
 
         structIxs = data.structs.map(function(d) { return d.ix; });
-        color.domain(structIxs);
+
+        var color = d3.scale.category10().domain(structIxs);
 
         var structLength = data.structs[0].struct.length;
         var sequenceNumbers = Array.apply(0, Array(structLength)).map(function(x,y) { return y+1; });
@@ -148,14 +121,6 @@ function dotplot(element) {
 
 
         var g = main.append("svg:g"); 
-
-        highlightCircle = g.append('circle');
-
-        highlightCircle.attr('r', x.rangeBand())
-        .style('stroke', 'black')
-        .style('stroke-width', 1)
-        .style('fill', 'black')
-        .style('opacity', 0.3);
 
         g.selectAll(".topXLabel")
         .data(jSet)
@@ -205,7 +170,7 @@ function dotplot(element) {
          .attr("y", function (d) { return y(d.i) + (y.rangeBand() - r(d.p)) / 2; } )
          .attr("width", function(d) { return r(d.p); } )
          .attr("height", function(d) { return r(d.p); } )
-         .attr('fill', function(d) { console.log('xxx d.ix:', d.ix, 'color:', color(d.ix)); return color(d.ix); })
+         .attr('fill', function(d) { return color(d.ix); })
          .attr('pointer-events', 'all')
          .on('mouseover', rectangleMouseOver)
          .on('mouseout', rectangleMouseOut);
@@ -275,7 +240,6 @@ function dotplot(element) {
          .on('mouseout', rectangleMouseOut);
 
         var seq = data.seq.split('').map(function(d, i) { return {"s": d, "i": i+1}; });
-        console.log('seq',seq);
 
         /////////////////////////////////////////////////////////////
         g.selectAll('.topSeq')
@@ -289,7 +253,6 @@ function dotplot(element) {
         .text(function(d) { return d.s; });
 
 
-        console.log('data', data);
         var bpColors = d3.scale.linear().domain([0,1]).range(['white', '#888']);
 
         g.selectAll('.topProbs')
@@ -370,8 +333,22 @@ function dotplot(element) {
           .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
     }
 
+    function positionTreemapRect() {
+      this.attr("x", function(d) {  return d.x; })
+          .attr("y", function(d) { return d.y; })
+          .attr("width", function(d) { return Math.max(0, d.dx - 1); })
+          .attr("height", function(d) { return Math.max(0, d.dy - 1); });
+    }
+
+    var highlightCircle = g.append('circle');
+
+    highlightCircle.attr('r', x.rangeBand())
+    .style('stroke', 'black')
+    .style('stroke-width', 1)
+    .style('fill', 'black')
+    .style('opacity', 0.0);
+
     function gnodeMouseOver(d) {
-        console.log('d:', d);
 
         var pairingPartner = d.rna.pairtable[d.num];
 
@@ -380,7 +357,6 @@ function dotplot(element) {
 
         var points  = [d.num, pairingPartner];
         points.sort(function(a,b) { return +a - +b;} );
-        console.log('points:', points);
 
         highlightCircle
         .attr('cx', x(points[1]) + x.rangeBand() / 2)
@@ -402,9 +378,27 @@ function dotplot(element) {
         "initialSize": [280, 280],
         "transitionDuration": 0 };
 
-      var node = treemapDiv.datum(root).selectAll(".treemapNode")
+    var treemap = d3.layout.treemap()
+        .size([width, height])
+        .sticky(false)
+        .value(function(d) { return d.size; });
+
+      var treemapGnodes = gMiddle.datum(root).selectAll(".treemapNode")
           .data(treemap.nodes)
-        .enter().append("div")
+        .enter()
+        .append('g')
+        .attr('class', 'treemapNode')
+        .attr('id', divName)
+
+        treemapGnodes.append('rect')
+        .attr('fill', function(d) { console.log('d:', d); return color(d.ix); })
+        .attr('stroke-width', 1)
+        .attr('stroke', 'black')
+        .call(positionTreemapRect);
+
+        
+        /*
+        .append("div")
           .attr("class", "treemapNode")
           .attr("id", divName)
           .call(positionTreemapDiv)
@@ -461,6 +455,7 @@ function dotplot(element) {
                 }
             }
         });
+        */
         
         });
 }
