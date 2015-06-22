@@ -166,6 +166,7 @@ function FornaContainer(element, passedOptions) {
 
         var options = {"uids": uids};
         var newRNAJson = self.createInitialLayout(newStructure, options);
+        self.newRNA = newRNAJson;
 
         var gnodes = self.vis_nodes.selectAll('g.gnode').data(newRNAJson.nodes, node_key);
         var duration = self.options.transitionDuration;

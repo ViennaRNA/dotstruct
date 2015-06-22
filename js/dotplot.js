@@ -19,6 +19,14 @@ function dotplot(element) {
 	.attr('class', 'chartx')
     .attr('pointer-events', 'none')
     .style('position', 'absolute');
+
+    var mainUnder = chartUnder.append('g')
+	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+	.attr('width', width)
+	.attr('height', height)
+	.attr('class', 'main');
+    
+    var gUnder = mainUnder.append("svg:g"); 
     
     var treemapDiv = d3.select("#dotplot").append("div")
         .style("position", "absolute")
@@ -56,12 +64,6 @@ function dotplot(element) {
 	.attr('height', height)
 	.attr('class', 'main');
 
-    var mainUnder = chartUnder.append('g')
-	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-	.attr('width', width)
-	.attr('height', height)
-	.attr('class', 'main');
-
     function highlightPair(num1, num2) {
         for (var key in containers) {
            var container = containers[key];
@@ -92,31 +94,6 @@ function dotplot(element) {
         }
     }
 
-    function gnodeMouseOver(d) {
-        console.log('d:', d);
-
-        var pairingPartner = d.rna.pairtable[d.num];
-
-        if (pairingPartner === 0)
-            return;
-
-        var points  = [d.num, pairingPartner];
-        points.sort(function(a,b) { return +a - +b;} );
-        console.log('points:', points);
-
-        highlightCircle
-        .attr('cx', x(points[1]) + x.rangeBand() / 2)
-        .attr('cy', y(points[0]) + y.rangeBand() / 2)
-        .style('opacity', 0.3);
-
-        highlightPair(points[0], points[1]);
-    }
-
-    function gnodeMouseOut(d) {
-        highlightCircle.style('opacity', 0);
-
-        unHighlight();
-    }
 
     function rectangleMouseOver(d) {
         var xx = d3.select(this);
@@ -171,7 +148,6 @@ function dotplot(element) {
 
 
         var g = main.append("svg:g"); 
-        var gUnder = mainUnder.append("svg:g"); 
 
         highlightCircle = g.append('circle');
 
@@ -222,17 +198,17 @@ function dotplot(element) {
          .attr('nucPair', function(d) { return d.i + "-" + d.j; })
          .classed('y-guide-line', true);
 
-        g.selectAll("scatter-dots")
-          .data(data.bps)
-          .enter().append("svg:rect")
-              .attr("x", function (d,i) { return x(d.j) + (x.rangeBand() - r(d.p)) / 2; } )
-              .attr("y", function (d) { return y(d.i) + (y.rangeBand() - r(d.p)) / 2; } )
-              .attr("width", function(d) { return r(d.p); } )
-              .attr("height", function(d) { return r(d.p); } )
-              .attr('fill', function(d) { console.log('xxx d.ix:', d.ix, 'color:', color(d.ix)); return color(d.ix); })
-              .attr('pointer-events', 'all')
-              .on('mouseover', rectangleMouseOver)
-              .on('mouseout', rectangleMouseOut);
+         g.selectAll("scatter-dots")
+         .data(data.bps)
+         .enter().append("svg:rect")
+         .attr("x", function (d,i) { return x(d.j) + (x.rangeBand() - r(d.p)) / 2; } )
+         .attr("y", function (d) { return y(d.i) + (y.rangeBand() - r(d.p)) / 2; } )
+         .attr("width", function(d) { return r(d.p); } )
+         .attr("height", function(d) { return r(d.p); } )
+         .attr('fill', function(d) { console.log('xxx d.ix:', d.ix, 'color:', color(d.ix)); return color(d.ix); })
+         .attr('pointer-events', 'all')
+         .on('mouseover', rectangleMouseOver)
+         .on('mouseout', rectangleMouseOut);
 
 
         var xMfe = d3.scale.ordinal()
@@ -286,17 +262,17 @@ function dotplot(element) {
          .style('opacity', 1)
          .classed('y-guide-lineMfe', true);
 
-        g.selectAll("scatter-dots-mfe")
-          .data(mfeBps)
-          .enter().append("svg:rect")
-              .attr("x", function (d,i) { return x(d.i) + (x.rangeBand() - r(d.p)) / 2; } )
-              .attr("y", function (d) { return y(d.j) + (y.rangeBand() - r(d.p)) / 2; } )
-              .attr("width", function(d) { return r(d.p); } )
-              .attr("height", function(d) { return r(d.p); } )
-              .attr('fill', function(d) { return color(d.ix); })
-              .attr('pointer-events', 'all')
-              .on('mouseover', rectangleMouseOver)
-              .on('mouseout', rectangleMouseOut);
+         g.selectAll("scatter-dots-mfe")
+         .data(mfeBps)
+         .enter().append("svg:rect")
+         .attr("x", function (d,i) { return x(d.i) + (x.rangeBand() - r(d.p)) / 2; } )
+         .attr("y", function (d) { return y(d.j) + (y.rangeBand() - r(d.p)) / 2; } )
+         .attr("width", function(d) { return r(d.p); } )
+         .attr("height", function(d) { return r(d.p); } )
+         .attr('fill', function(d) { return color(d.ix); })
+         .attr('pointer-events', 'all')
+         .on('mouseover', rectangleMouseOver)
+         .on('mouseout', rectangleMouseOut);
 
         var seq = data.seq.split('').map(function(d, i) { return {"s": d, "i": i+1}; });
         console.log('seq',seq);
@@ -387,11 +363,37 @@ function dotplot(element) {
         }
 
 
-    function position() {
+    function positionTreemapDiv() {
       this.style("left", function(d) {  return d.x + "px"; })
           .style("top", function(d) { return d.y + "px"; })
           .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
           .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    }
+
+    function gnodeMouseOver(d) {
+        console.log('d:', d);
+
+        var pairingPartner = d.rna.pairtable[d.num];
+
+        if (pairingPartner === 0)
+            return;
+
+        var points  = [d.num, pairingPartner];
+        points.sort(function(a,b) { return +a - +b;} );
+        console.log('points:', points);
+
+        highlightCircle
+        .attr('cx', x(points[1]) + x.rangeBand() / 2)
+        .attr('cy', y(points[0]) + y.rangeBand() / 2)
+        .style('opacity', 0.3);
+
+        highlightPair(points[0], points[1]);
+    }
+
+    function gnodeMouseOut(d) {
+        highlightCircle.style('opacity', 0);
+
+        unHighlight();
     }
 
     var fornaContainerOptions = {'applyForce': false, 
@@ -405,14 +407,16 @@ function dotplot(element) {
         .enter().append("div")
           .attr("class", "treemapNode")
           .attr("id", divName)
-          .call(position)
+          .call(positionTreemapDiv)
           //.style("background", function(d) { return d.children ? color(d.name) : null; })
           //.text(function(d) { return d.children ? null : d.name; })
           .each(function(d) { 
                   if (typeof d.struct != 'undefined') {
+                      console.log('d.name:', d.name);
+
                       d.container = new FornaContainer("#" + divName(d), fornaContainerOptions);
                       d.container.transitionRNA(d.struct);
-                      d.container.setOutlineColor(color(d.name));
+                      d.container.setOutlineColor('grey');
 
                       containers[d.name] = d.container;
 
@@ -441,6 +445,21 @@ function dotplot(element) {
             .select('.node')
             .style('stroke-width', 3)
             .style('stroke', 'black');
+
+            for (var ix in containers) {
+                console.log('containers[ix]:', containers[ix]);
+                if (containers[ix].newRNA.pairtable[d.i] === d.j) {
+                    containers[ix].options.svg
+                    .selectAll('[nuc_num="' + d.i + '"]')
+                    .select('.node')
+                    .style('fill', color(d.ix));
+
+                    containers[ix].options.svg
+                    .selectAll('[nuc_num="' + d.j + '"]')
+                    .select('.node')
+                    .style('fill', color(d.ix));
+                }
+            }
         });
         
         });
