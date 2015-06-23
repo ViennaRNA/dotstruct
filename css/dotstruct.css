@@ -1,3 +1,40 @@
+.guide-line {
+    opacity: 0.0;
+    stroke: #ccc;
+    stroke-width; 2;
+}
+
+.text-highlight-rect {
+    stroke-width: 1;
+    fill: black;
+    stroke: black;
+    opacity: 0.3;
+    visibility: hidden;
+}
+
+.rnaBase {
+    opacity: 0.2;
+}
+
+.selected {
+    opacity: 1.0;
+}
+
+.text-selected {
+    visibility: visible;
+}
+
+.guide-selected { 
+    opacity: 1.0;
+}
+
+.structure-background-rect {
+    fill: transparent;
+    stroke-width: 0.5;
+    stroke: black;
+    opacity: 0.05;
+}
+
 text {
     font: 8px sans-serif;
 }

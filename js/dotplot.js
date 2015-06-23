@@ -7,14 +7,6 @@ function dotplot(element) {
       width = dim - margin.left - margin.right,
       height = dim - margin.top - margin.bottom;
 
-    var treemapDiv = d3.select("#dotplot").append("div")
-        .style("position", "absolute")
-        .style("width", width + "px")
-        .style("height", height + "px")
-        .style("left", margin.left + "px")
-        .style("top", margin.top + "px")
-        .style("opacity", 1);
- 
     var chart = d3.select(element)
     .attr('left', 0 + 'px')
     .attr('top', 0 + 'px')
@@ -33,46 +25,56 @@ function dotplot(element) {
 	.attr('class', 'main');
 
     var gUnder = rootG.append('g');
-    var gMiddle = rootG.append('g');
-    var main = rootG.append('g');
+    var gMiddle = rootG.append('g').attr('pointer-events', 'all');
+    var gMain = rootG.append('g').attr('pointer-events', 'all');
 
+    function highlightNucleotide(num1, prefix) {
+        gMiddle.selectAll('[nuc_num="' + num1 + '"]')
+        .classed('selected', true);
 
-    function highlightPair(num1, num2) {
-        for (var key in containers) {
-           var container = containers[key];
-           var circles  = container.options.svg.selectAll("[nuc_num='" + num1 + "'],[nuc_num='" + num2 + "']")
-            .select('.node');
+        gMain.selectAll('[' + prefix + 'text-nuc-num="' + num1 + '"]')
+        .classed('text-selected', true)
 
-           circles.style('opacity', 1.0);
-        }
-
-        /*
-        var selectStr ="[nucPair=n" + num1+ "]"
-        console.log('selectStr', selectStr);
-        var lines = chartUnder.selectAll("[nucPair='n']");
-        console.log('lines:', lines)
-        lines.attr('stroke', '#aaa');
-        */
-
+        gUnder.selectAll('[' + prefix + 'guide-num="' + num1 + '"]')
+        .classed('guide-selected', true)
     }
 
     function unHighlight() {
-        for (var key in containers) {
-            var container = containers[key];
-            var circles  = container.options.svg.selectAll(".node");
+        gMiddle.selectAll('.rnaBase')
+        .classed('selected', false);
 
-            circles
-            .style('opacity', 0.2);
-        }
+        console.log('unhighlighting')
+        var gAll = gMain.selectAll();
+
+        console.log('gAll:', gAll);
+
+        gMain.selectAll('.text-highlight-rect')
+        .classed('text-selected', false);
+
+        gUnder.selectAll('.guide-line')
+        .classed('guide-selected', false);
     }
 
 
-    function rectangleMouseOver(d) {
+    function ensembleRectangleMouseOver(d) {
         var xx = d3.select(this);
         xx.style('stroke', '#444')
         .style('stroke-width', 4);
 
-        highlightPair(d.i, d.j);
+        //highlightPair(d.i, d.j);
+        highlightNucleotide(d.i, 'right-');
+        highlightNucleotide(d.j, 'top-');
+
+    }
+
+    function mfeRectangleMouseOver(d) {
+        var xx = d3.select(this);
+        xx.style('stroke', '#444')
+        .style('stroke-width', 4);
+
+        //highlightPair(d.i, d.j);
+        highlightNucleotide(d.j, 'left-');
+        highlightNucleotide(d.i, 'bottom-');
 
     }
 
@@ -120,16 +122,15 @@ function dotplot(element) {
                   .range([0, x.rangeBand()]);
 
 
-        var g = main.append("svg:g"); 
 
-        g.selectAll(".topXLabel")
+        gMain.selectAll(".topXLabel")
         .data(jSet)
         .enter()
         .append("text")
         .attr('transform', function(d) { return 'translate(' + (x(d) + x.rangeBand() - 2) + ',0)rotate(-90)';})
         .text(function(d) { return d; });
 
-        g.selectAll(".rightYLabel")
+        gMain.selectAll(".rightYLabel")
         .data(iSet)
         .enter()
         .append("text")
@@ -144,11 +145,10 @@ function dotplot(element) {
          .attr("y1", 0)
          .attr("x2", function(d) { return x(d.j) + x.rangeBand() / 2; })
          .attr("y2", function(d) { return y(d.i) + y.rangeBand() / 2; })
-         .style('stroke', '#eee')
-         .style('stroke-width', 2)
-         .style('opacity', 1)
-         .attr('nucPair', function(d) { return "n"; })
-         .classed('x-guide-line', true);
+         .attr('nucPair', function(d) { return d.i + '-' + d.j; })
+         .attr('top-guide-num', function(d) { return d.j; })
+         .classed('x-guide-line', true)
+         .classed('guide-line', true);
 
         gUnder.selectAll(".y-guide-line")
          .data(data.bps)
@@ -157,13 +157,12 @@ function dotplot(element) {
          .attr("y1", function(d) { return y(d.i) + y.rangeBand() / 2; })
          .attr("x2", function(d) { return x(d.j) + x.rangeBand() / 2; })
          .attr("y2", function(d) { return y(d.i) + y.rangeBand() / 2; })
-         .style('stroke', '#eee')
-         .style('stroke-width', 2)
-         .style('opacity', 1)
          .attr('nucPair', function(d) { return d.i + "-" + d.j; })
-         .classed('y-guide-line', true);
+         .attr('right-guide-num', function(d) { return d.i; })
+         .classed('y-guide-line', true)
+         .classed('guide-line', true);
 
-         g.selectAll("scatter-dots")
+         gMain.selectAll("scatter-dots")
          .data(data.bps)
          .enter().append("svg:rect")
          .attr("x", function (d,i) { return x(d.j) + (x.rangeBand() - r(d.p)) / 2; } )
@@ -172,9 +171,8 @@ function dotplot(element) {
          .attr("height", function(d) { return r(d.p); } )
          .attr('fill', function(d) { return color(d.ix); })
          .attr('pointer-events', 'all')
-         .on('mouseover', rectangleMouseOver)
+         .on('mouseover', ensembleRectangleMouseOver)
          .on('mouseout', rectangleMouseOut);
-
 
         var xMfe = d3.scale.ordinal()
                   .domain(sequenceNumbers)
@@ -187,7 +185,7 @@ function dotplot(element) {
         var mfeBps = data.bps.filter(function(d) { return d.ix === 0; });
 
 
-        g.selectAll(".bottomXLabelMfe")
+        gMain.selectAll(".bottomXLabelMfe")
         .data(mfeBps)
         .enter()
         .append("text")
@@ -195,7 +193,7 @@ function dotplot(element) {
         .attr('text-anchor', 'end')
         .text(function(d) { return d.i; });
 
-        g.selectAll(".leftYLabelMfe")
+        gMain.selectAll(".leftYLabelMfe")
         .data(mfeBps)
         .enter()
         .append("text")
@@ -210,10 +208,9 @@ function dotplot(element) {
          .attr("y1", height)
          .attr("x2", function(d) { return x(d.i) + x.rangeBand() / 2; })
          .attr("y2", function(d) { return y(d.j) + y.rangeBand() / 2; })
-         .style('stroke', '#eee')
-         .style('stroke-width', 2)
-         .style('opacity', 1)
-         .classed('x-guide-lineMfe', true);
+         .attr('left-guide-num', function(d) { return d.j; })
+         .classed('x-guide-lineMfe', true)
+         .classed('guide-line', true);
 
         gUnder.selectAll(".y-guide-lineMfe")
          .data(mfeBps)
@@ -222,12 +219,11 @@ function dotplot(element) {
          .attr("y1", function(d) { return y(d.j) + y.rangeBand() / 2; })
          .attr("x2", function(d) { return x(d.i) + x.rangeBand() / 2; })
          .attr("y2", function(d) { return y(d.j) + y.rangeBand() / 2; })
-         .style('stroke', '#eee')
-         .style('stroke-width', 2)
-         .style('opacity', 1)
-         .classed('y-guide-lineMfe', true);
+         .attr('bottom-guide-num', function(d) { return d.i; })
+         .classed('y-guide-lineMfe', true)
+         .classed('guide-line', true);
 
-         g.selectAll("scatter-dots-mfe")
+         gMain.selectAll("scatter-dots-mfe")
          .data(mfeBps)
          .enter().append("svg:rect")
          .attr("x", function (d,i) { return x(d.i) + (x.rangeBand() - r(d.p)) / 2; } )
@@ -236,26 +232,16 @@ function dotplot(element) {
          .attr("height", function(d) { return r(d.p); } )
          .attr('fill', function(d) { return color(d.ix); })
          .attr('pointer-events', 'all')
-         .on('mouseover', rectangleMouseOver)
+         .on('mouseover', mfeRectangleMouseOver)
          .on('mouseout', rectangleMouseOut);
 
         var seq = data.seq.split('').map(function(d, i) { return {"s": d, "i": i+1}; });
 
         /////////////////////////////////////////////////////////////
-        g.selectAll('.topSeq')
-        .data(seq)
-        .enter()
-        .append('text')
-        .attr('x', function(d) { 
-            return x(d.i); 
-        })
-        .attr('y', -20)
-        .text(function(d) { return d.s; });
-
 
         var bpColors = d3.scale.linear().domain([0,1]).range(['white', '#888']);
 
-        g.selectAll('.topProbs')
+        gMain.selectAll('.topProbs')
         .data(data.baseProbs)
         .enter()
         .append('svg:rect')
@@ -266,7 +252,7 @@ function dotplot(element) {
         .attr('height', y.rangeBand())
         .attr('fill', function(d) { return bpColors(d[1]); });
 
-        g.selectAll('.leftProbs')
+        gMain.selectAll('.leftProbs')
         .data(data.baseProbs)
         .enter()
         .append('svg:rect')
@@ -276,8 +262,35 @@ function dotplot(element) {
         .attr('width', x.rangeBand())
         .attr('height', y.rangeBand())
         .attr('fill', function(d) { return bpColors(d[1]); });
+
+        highlightSeq = function(d, node, prefix ) {
+            svgRect = node.getBBox();
+            var parentNode = d3.select(node.parentNode);
+
+            console.log('parentNode:', parentNode);
+
+            parentNode.append('rect')
+            .attr('x', svgRect.x-2)
+            .attr('y', svgRect.y)
+            .attr('height', svgRect.height)
+            .attr('width', svgRect.width + 2)
+            .attr(prefix + 'text-nuc-num', d.i) // enable highlighting of nucleotide numbers
+            .classed('text-highlight-rect', true);
+
+        }
+
+        gMain.selectAll('.topSeq')
+        .data(seq)
+        .enter()
+        .append('text')
+        .attr('x', function(d) { 
+            return x(d.i); 
+        })
+        .attr('y', -20)
+        .text(function(d) { return d.s; })
+        .each(function(d) { highlightSeq(d, this, 'top-'); });
         
-        g.selectAll('.bottomSeq')
+        gMain.selectAll('.bottomSeq')
         .data(seq)
         .enter()
         .append('text')
@@ -285,34 +298,38 @@ function dotplot(element) {
             return x(d.i); 
         })
         .attr('y', height + 25)
-        .text(function(d) { return d.s; });
+        .text(function(d) { return d.s; })
+        .each(function(d) { highlightSeq(d, this, 'bottom-'); });
 
-        g.selectAll('.leftSeq')
+        gMain.selectAll('.leftSeq')
         .data(seq)
         .enter()
         .append('text')
         .attr('x', -25)
         .attr('y', function(d) { return y(d.i) + 8; })
-        .text(function(d) { return d.s; });
+        .text(function(d) { return d.s; })
+        .each(function(d) { highlightSeq(d, this, 'left-'); });
 
-        g.selectAll('.rightSeq')
+        gMain.selectAll('.rightSeq')
         .data(seq)
         .enter()
         .append('text')
         .attr('x', width + 18)
         .attr('y', function(d) { return y(d.i) + 8; })
-        .text(function(d) { return d.s; });
+        .text(function(d) { return d.s; })
+        .each(function(d) { highlightSeq(d, this, 'right-'); });
 
         ////////////////////////////////////////////////////////////
         var root = {"name": "graph",
             "children": data.structs.map(function(d) { 
                     return {"name": d.ix, 
-                    "struct": d.struct,
+                    "structure": d.struct,
+                    "sequence": self.data.seq,
                     "size": +d.sprob * 100 };
                     })
         };
 
-        g.append('svg:line')
+        gMain.append('svg:line')
         .attr('x1', 0)
         .attr('y1', 0)
         .attr('x2', width)
@@ -326,21 +343,7 @@ function dotplot(element) {
         }
 
 
-    function positionTreemapDiv() {
-      this.style("left", function(d) {  return d.x + "px"; })
-          .style("top", function(d) { return d.y + "px"; })
-          .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
-          .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
-    }
-
-    function positionTreemapRect() {
-      this.attr("x", function(d) {  return d.x; })
-          .attr("y", function(d) { return d.y; })
-          .attr("width", function(d) { return Math.max(0, d.dx - 1); })
-          .attr("height", function(d) { return Math.max(0, d.dy - 1); });
-    }
-
-    var highlightCircle = g.append('circle');
+    var highlightCircle = gMain.append('circle');
 
     highlightCircle.attr('r', x.rangeBand())
     .style('stroke', 'black')
@@ -348,9 +351,9 @@ function dotplot(element) {
     .style('fill', 'black')
     .style('opacity', 0.0);
 
-    function gnodeMouseOver(d) {
-
+    function nucleotideMouseOver(d) {
         var pairingPartner = d.rna.pairtable[d.num];
+        highlightNucleotide(d.num);
 
         if (pairingPartner === 0)
             return;
@@ -363,10 +366,14 @@ function dotplot(element) {
         .attr('cy', y(points[0]) + y.rangeBand() / 2)
         .style('opacity', 0.3);
 
-        highlightPair(points[0], points[1]);
+        //highlightPair(points[0], points[1]);
+        highlightNucleotide(points[0], 'right-');
+        highlightNucleotide(points[1], 'top-');
+
+        console.log('d:', d);
     }
 
-    function gnodeMouseOut(d) {
+    function nucleotideMouseOut(d) {
         highlightCircle.style('opacity', 0);
 
         unHighlight();
@@ -383,80 +390,80 @@ function dotplot(element) {
         .sticky(false)
         .value(function(d) { return d.size; });
 
+        function positionTreemapRect() {
+              this.attr("width", function(d) { return Math.max(0, d.dx); })
+              .attr("height", function(d) { return Math.max(0, d.dy); });
+        }
+
       var treemapGnodes = gMiddle.datum(root).selectAll(".treemapNode")
           .data(treemap.nodes)
         .enter()
         .append('g')
         .attr('class', 'treemapNode')
         .attr('id', divName)
+        .each(function(d) { 
+            // create a background rectangle for each RNA structure
+            d3.select(this).attr('transform', function(d) { return 'translate(' + d.x + "," + d.y + ')' })
+            .append('rect')
+            //.attr('fill', function(d) { return color(d.name); })
+            .classed('structure-background-rect', true)
+            .call(positionTreemapRect)
 
-        treemapGnodes.append('rect')
-        .attr('fill', function(d) { console.log('d:', d); return color(d.ix); })
-        .attr('stroke-width', 1)
-        .attr('stroke', 'black')
-        .call(positionTreemapRect);
+            var chart = rnaPlot()
+            .width( Math.max(0, d.dx))
+            .height( Math.max(0, d.dy))
+            .labelInterval(0)
+            .rnaEdgePadding(10)
+            .showNucleotideLabels(false);
 
-        
-        /*
-        .append("div")
-          .attr("class", "treemapNode")
-          .attr("id", divName)
-          .call(positionTreemapDiv)
-          //.style("background", function(d) { return d.children ? color(d.name) : null; })
-          //.text(function(d) { return d.children ? null : d.name; })
-          .each(function(d) { 
-                  if (typeof d.struct != 'undefined') {
-                      console.log('d.name:', d.name);
+            if ('structure' in d) {
+                //let's draw an RNA!
 
-                      d.container = new FornaContainer("#" + divName(d), fornaContainerOptions);
-                      d.container.transitionRNA(d.struct);
-                      d.container.setOutlineColor('grey');
-
-                      containers[d.name] = d.container;
-
-                      d.container.options.svg.selectAll('.node')
-                      .style('opacity', 0.2);
-
-                      d.container.options.svg.selectAll('.link')
-                      .style('opacity', 0.0);
-
-                      var gNodes = d.container.options.svg.selectAll('.gnode')
-                      .on('mouseover', gnodeMouseOver)
-                      .on('mouseout', gnodeMouseOut);
-                  }
-            } );
-
-            // highlight the base pairs in each structure
-        data.bps.forEach(function(d) {
-            containers[d.ix].options.svg
-            .selectAll('[nuc_num="' + d.i + '"]')
-            .select('.node')
-            .style('stroke-width', 3)
-            .style('stroke', 'black');
-
-            containers[d.ix].options.svg
-            .selectAll('[nuc_num="' + d.j + '"]')
-            .select('.node')
-            .style('stroke-width', 3)
-            .style('stroke', 'black');
-
-            for (var ix in containers) {
-                console.log('containers[ix]:', containers[ix]);
-                if (containers[ix].newRNA.pairtable[d.i] === d.j) {
-                    containers[ix].options.svg
-                    .selectAll('[nuc_num="' + d.i + '"]')
-                    .select('.node')
-                    .style('fill', color(d.ix));
-
-                    containers[ix].options.svg
-                    .selectAll('[nuc_num="' + d.j + '"]')
-                    .select('.node')
-                    .style('fill', color(d.ix));
-                }
+                d3.select(this)
+                .call(chart)
+                .classed('rnaStruct', true)
+                .attr('struct_id', function(n) { return "struct"+n.name; })
+                .selectAll('.rnaBase')
+                .attr('fill', 'white')
+                .attr('stroke-width', 0.5)
+                .attr('stroke', 'black')
+                .attr('nuc_num', function(n) { return n.num; })
+                .on('mouseover', nucleotideMouseOver)
+                .on('mouseout', nucleotideMouseOut);
+            
             }
         });
-        */
-        
+
+        /*
+        data.bps.forEach(function(d) {
+            var rnaStruct = gMiddle.selectAll('[struct_id=struct' + d.ix + ']')
+            .each(function(d) { console.log('struct:', d); })
+
+            gMiddle.selectAll('[nuc_num="' + d.i + '"],[nuc_num="' + d.j + '"]')
+            .style('fill', color(d.ix))
         });
+        */
+
+        data.bps.forEach(function(d) {
+            var rnaStruct = gMiddle.selectAll('[struct_id=struct' + d.ix + ']')
+
+            rnaStruct.selectAll('[nuc_num="' + d.i + '"],[nuc_num="' + d.j + '"]')
+            .style('stroke-width', 2)
+            .style('stroke', 'black')
+            .style('fill', color(d.ix))
+
+            var containers = gMiddle.selectAll(".rnaStruct")
+            .each(function(c) {
+                if (c.rnaGraph.pairtable[d.i] === d.j) {
+                        //this base is paired in this structure
+                d3.select(this).selectAll('[nuc_num="' + d.i + '"],[nuc_num="' + d.j + '"]')
+                .style('fill', color(d.ix))
+
+                }
+            });
+
+        });
+
+    });
 }
 
