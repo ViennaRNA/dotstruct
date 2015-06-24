@@ -1,3 +1,8 @@
+.from-this-structure {
+    stroke-width: 2;
+    stroke: black;
+}
+
 .highlight-circle {
     stroke: black;
     stroke-width: 1;
@@ -19,8 +24,11 @@
     visibility: hidden;
 }
 
-.rnaBase {
+.rna-base {
     opacity: 0.2;
+    fill: white;
+    stroke-width: 0.5;
+    stroke: black;
 }
 
 .selected {

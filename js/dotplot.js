@@ -40,13 +40,10 @@ function dotplot(element) {
     }
 
     function unHighlight() {
-        gMiddle.selectAll('.rnaBase')
+        gMiddle.selectAll('.rna-base')
         .classed('selected', false);
 
-        console.log('unhighlighting')
         var gAll = gMain.selectAll();
-
-        console.log('gAll:', gAll);
 
         gMain.selectAll('.text-highlight-rect')
         .classed('text-selected', false);
@@ -260,8 +257,6 @@ function dotplot(element) {
             svgRect = node.getBBox();
             var parentNode = d3.select(node.parentNode);
 
-            console.log('parentNode:', parentNode);
-
             parentNode.append('rect')
             .attr('x', svgRect.x-2)
             .attr('y', svgRect.y)
@@ -376,7 +371,6 @@ function dotplot(element) {
 
         }
 
-        console.log('d:', d);
     }
 
     function nucleotideMouseOut(d) {
@@ -430,10 +424,7 @@ function dotplot(element) {
                 .call(chart)
                 .classed('rnaStruct', true)
                 .attr('struct_id', function(n) { return "struct"+n.name; })
-                .selectAll('.rnaBase')
-                .attr('fill', 'white')
-                .attr('stroke-width', 0.5)
-                .attr('stroke', 'black')
+                .selectAll('.rna-base')
                 .attr('nuc_num', function(n) { return n.num; })
                 .on('mouseover', nucleotideMouseOver)
                 .on('mouseout', nucleotideMouseOut);
@@ -441,22 +432,11 @@ function dotplot(element) {
             }
         });
 
-        /*
-        data.bps.forEach(function(d) {
-            var rnaStruct = gMiddle.selectAll('[struct_id=struct' + d.ix + ']')
-            .each(function(d) { console.log('struct:', d); })
-
-            gMiddle.selectAll('[nuc_num="' + d.i + '"],[nuc_num="' + d.j + '"]')
-            .style('fill', color(d.ix))
-        });
-        */
-
         data.bps.forEach(function(d) {
             var rnaStruct = gMiddle.selectAll('[struct_id=struct' + d.ix + ']')
 
             rnaStruct.selectAll('[nuc_num="' + d.i + '"],[nuc_num="' + d.j + '"]')
-            .style('stroke-width', 2)
-            .style('stroke', 'black')
+            .classed('from-this-structure', true)
             .style('fill', color(d.ix))
 
             var containers = gMiddle.selectAll(".rnaStruct")
