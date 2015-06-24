@@ -1,10 +1,3 @@
-svg {
-  display: block;
-  min-width: 100%;
-  width: 100%;
-  min-height: 100%;
-}
-
 circle.node {
   stroke: #ccc;
   stroke-width: 1px;

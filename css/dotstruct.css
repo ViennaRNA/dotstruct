@@ -1,6 +1,9 @@
-.from-this-structure {
+#dotplot {
+}
+
+.diagonal-line {
+    stroke: #888;
     stroke-width: 2;
-    stroke: black;
 }
 
 .highlight-circle {
@@ -48,6 +51,11 @@
     stroke-width: 0.5;
     stroke: black;
     opacity: 0.05;
+}
+
+.from-this-structure {
+    stroke-width: 2;
+    stroke: black;
 }
 
 text {
