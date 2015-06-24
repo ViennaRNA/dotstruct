@@ -1,3 +1,10 @@
+.highlight-circle {
+    stroke: black;
+    stroke-width: 1;
+    fill: black;
+    opacity: 0;
+}
+
 .guide-line {
     opacity: 0.0;
     stroke: #ccc;

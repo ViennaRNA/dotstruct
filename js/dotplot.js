@@ -174,13 +174,6 @@ function dotplot(element) {
          .on('mouseover', ensembleRectangleMouseOver)
          .on('mouseout', rectangleMouseOut);
 
-        var xMfe = d3.scale.ordinal()
-                  .domain(sequenceNumbers)
-                  .rangeRoundBands([ 0, width ]);
-        
-        var yMfe = d3.scale.ordinal()
-                  .domain(sequenceNumbers)
-                  .rangeRoundBands([ 0, height ]);
 
         var mfeBps = data.bps.filter(function(d) { return d.ix === 0; });
 
@@ -344,12 +337,13 @@ function dotplot(element) {
 
 
     var highlightCircle = gMain.append('circle');
+    var highlightCircleMfe = gMain.append('circle');
 
     highlightCircle.attr('r', x.rangeBand())
-    .style('stroke', 'black')
-    .style('stroke-width', 1)
-    .style('fill', 'black')
-    .style('opacity', 0.0);
+    .classed('highlight-circle', true)
+
+    highlightCircleMfe.attr('r', x.rangeBand())
+    .classed('highlight-circle', true)
 
     function nucleotideMouseOver(d) {
         var pairingPartner = d.rna.pairtable[d.num];
@@ -370,11 +364,24 @@ function dotplot(element) {
         highlightNucleotide(points[0], 'right-');
         highlightNucleotide(points[1], 'top-');
 
+        if (d.structName == '0') {
+            // base pair is in the MFE structure
+            highlightNucleotide(points[1], 'left-');
+            highlightNucleotide(points[0], 'bottom-');
+
+            highlightCircleMfe
+            .attr('cx', x(points[0]) + x.rangeBand() / 2)
+            .attr('cy', y(points[1]) + y.rangeBand() / 2)
+            .style('opacity', 0.3);
+
+        }
+
         console.log('d:', d);
     }
 
     function nucleotideMouseOut(d) {
         highlightCircle.style('opacity', 0);
+        highlightCircleMfe.style('opacity', 0);
 
         unHighlight();
     }
