@@ -67,7 +67,7 @@ function dotStructLayout(element) {
                 .classed('selected', true);
 
                 gMain.selectAll('[' + prefix + 'text-nuc-num="' + num1 + '"]')
-                .classed('text-selected', true)
+                .classed('visible', true)
 
                 gUnder.selectAll('[' + prefix + 'guide-num="' + num1 + '"]')
                 .classed('guide-selected', true)
@@ -80,7 +80,7 @@ function dotStructLayout(element) {
                 var gAll = gMain.selectAll();
 
                 gMain.selectAll('.text-highlight-rect')
-                .classed('text-selected', false);
+                .classed('visible', false);
 
                 gUnder.selectAll('.guide-line')
                 .classed('guide-selected', false);
@@ -91,6 +91,9 @@ function dotStructLayout(element) {
                 var xx = d3.select(this);
                 xx.style('stroke', '#444')
                 .style('stroke-width', 4);
+
+                var selectText = '#text-' + d.i + '-' + d.j;
+                gMain.selectAll(selectText).classed('visible', true)
 
                 //highlightPair(d.i, d.j);
                 highlightNucleotide(d.i, 'right-');
@@ -113,6 +116,9 @@ function dotStructLayout(element) {
                 var xx = d3.select(this);
                 xx.style('stroke', '#444')
                 .style('stroke-width', 0);
+
+                var selectText = '#text-' + d.i + '-' + d.j;
+                gMain.selectAll(selectText).classed('visible', false)
 
                 //unHighlightPair(d.i, d.j);
                 unHighlight();
@@ -206,6 +212,14 @@ function dotStructLayout(element) {
             .on('mouseover', ensembleRectangleMouseOver)
             .on('mouseout', rectangleMouseOut);
 
+            gMain.selectAll(".scatter-dots-text")
+            .data(data.bps)
+            .enter().append('text')
+            .attr('x', function(d,i) { return xScale(d.j) + (xScale.rangeBand() - r(d.p)) / 2 - 5; } )
+            .attr("y", function (d) { return yScale(d.i) + (yScale.rangeBand() + r(d.p)) / 2; } )
+            .text(function(d) { return "(" + d.i + "," + d.j + "): " + d.p; })
+            .attr('id', function(d) { return 'text-' + d.i + "-" + d.j; })
+            .classed('scatter-dots-text', true);
 
             var mfeBps = data.bps.filter(function(d) { return d.ix === 0; });
 
@@ -358,7 +372,7 @@ function dotStructLayout(element) {
                 })
             };
 
-            gMain.append('svg:line')
+            gUnder.append('svg:line')
             .attr('x1', 0)
             .attr('y1', 0)
             .attr('x2', innerWidth)
@@ -390,6 +404,9 @@ function dotStructLayout(element) {
                 var points  = [d.num, pairingPartner];
                 points.sort(function(a,b) { return +a - +b;} );
 
+                var selectText = '#text-' + points[0] + '-' + points[1];
+                gMain.selectAll(selectText).classed('visible', true)
+
                 highlightCircle
                 .attr('cx', xScale(points[1]) + xScale.rangeBand() / 2)
                 .attr('cy', yScale(points[0]) + yScale.rangeBand() / 2)
@@ -418,6 +435,9 @@ function dotStructLayout(element) {
                 highlightCircleMfe.style('opacity', 0);
 
                 unHighlight();
+
+                var selectText = '.scatter-dots-text';
+                gMain.selectAll(selectText).classed('visible', false)
             }
 
             var fornaContainerOptions = {'applyForce': false, 
