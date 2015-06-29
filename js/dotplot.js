@@ -25,8 +25,6 @@ function dotStructLayout(element) {
                .style('position', 'absolute');
                */
 
-              console.log('width:', width);
-
 
             var zoomG = selection.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
@@ -58,7 +56,6 @@ function dotStructLayout(element) {
                 
                     rootG.attr('transform', 'translate(0,0)scale(1)'); 
                 }
-                console.log('event:', d3.event.keyCode);
             });
 
             var gUnder = rootG.append('g');
@@ -503,7 +500,6 @@ function dotStructLayout(element) {
 
     chart.width = function(_) {
         if (!arguments.length) return width;
-        console.log('setting width:', _);
 
         width = _;
         height = _;
