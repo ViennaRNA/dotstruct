@@ -25,10 +25,41 @@ function dotStructLayout(element) {
                .style('position', 'absolute');
                */
 
+              console.log('width:', width);
 
-            var rootG = selection.append('g')
+
+            var zoomG = selection.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-            .attr('class', 'main');
+            .attr('class', 'main')
+
+
+            var rootG = zoomG.append('g')
+
+
+            function zoom() {
+                var t = d3.event.translate,
+                s = d3.event.scale;
+
+                rootG.attr("transform", "translate(" + t + ")scale(" + s + ")");
+            }
+
+            var zoomer = d3.behavior.zoom()
+            .scaleExtent([0.3,2])
+            .on("zoom", zoom);
+
+            zoomG.call(zoomer)
+
+
+            d3.select('body')
+            .on('keydown', function() {
+                if (d3.event.keyCode === 67) { //c key
+                    zoomer.translate([0,0]);
+                    zoomer.scale(1);
+                
+                    rootG.attr('transform', 'translate(0,0)scale(1)'); 
+                }
+                console.log('event:', d3.event.keyCode);
+            });
 
             var gUnder = rootG.append('g');
             var gMiddle = rootG.append('g').attr('pointer-events', 'all');
@@ -129,6 +160,7 @@ function dotStructLayout(element) {
             .data(jSet)
             .enter()
             .append("text")
+            .classed('sequence-text', true)
             .attr('transform', function(d) { return 'translate(' + (xScale(d) + xScale.rangeBand() - 2) + ',0)rotate(-90)';})
             .text(function(d) { return d; });
 
@@ -136,6 +168,7 @@ function dotStructLayout(element) {
             .data(iSet)
             .enter()
             .append("text")
+            .classed('sequence-text', true)
             .attr('transform', function(d) { return 'translate(' + innerWidth + "," + (yScale(d) + yScale.rangeBand() - 2) + ')';})
             .text(function(d) { return d; });
 
@@ -184,6 +217,7 @@ function dotStructLayout(element) {
             .data(mfeBps)
             .enter()
             .append("text")
+            .classed('sequence-text', true)
             .attr('transform', function(d) { return 'translate(' + (xScale(d.i) + xScale.rangeBand() - 2) + ',' + innerHeight + ')rotate(-90)';})
             .attr('text-anchor', 'end')
             .text(function(d) { return d.i; });
@@ -192,6 +226,7 @@ function dotStructLayout(element) {
             .data(mfeBps)
             .enter()
             .append("text")
+            .classed('sequence-text', true)
             .attr('transform', function(d) { return 'translate(0, ' + (yScale(d.j) + yScale.rangeBand() - 2) + ')';})
             .attr('text-anchor', 'end')
             .text(function(d) { return d.j; });
@@ -280,6 +315,7 @@ function dotStructLayout(element) {
                 return xScale(d.i); 
             })
             .attr('y', -20)
+            .classed('sequence-text', true)
             .text(function(d) { return d.s; })
             .each(function(d) { highlightSeq(d, this, 'top-'); });
 
@@ -287,6 +323,7 @@ function dotStructLayout(element) {
             .data(seq)
             .enter()
             .append('text')
+            .classed('sequence-text', true)
             .attr('x', function(d) { 
                 return xScale(d.i); 
             })
@@ -298,6 +335,7 @@ function dotStructLayout(element) {
             .data(seq)
             .enter()
             .append('text')
+            .classed('sequence-text', true)
             .attr('x', -25)
             .attr('y', function(d) { return yScale(d.i) + 8; })
             .text(function(d) { return d.s; })
@@ -307,6 +345,7 @@ function dotStructLayout(element) {
             .data(seq)
             .enter()
             .append('text')
+            .classed('sequence-text', true)
             .attr('x', innerWidth + 18)
             .attr('y', function(d) { return yScale(d.i) + 8; })
             .text(function(d) { return d.s; })
@@ -457,10 +496,20 @@ function dotStructLayout(element) {
         });
     }
 
+    function updateInnerWidth() {
+        innerWidth = width - margin.left - margin.right,
+        innerHeight = width - margin.top - margin.bottom;
+    }
+
     chart.width = function(_) {
         if (!arguments.length) return width;
+        console.log('setting width:', _);
+
         width = _;
         height = _;
+
+        updateInnerWidth();
+
         return chart;
     }
 
@@ -468,6 +517,9 @@ function dotStructLayout(element) {
         if (!arguments.length) return height;
         width = _;
         height = _;
+
+        updateInnerWidth();
+
         return chart;
     }
 

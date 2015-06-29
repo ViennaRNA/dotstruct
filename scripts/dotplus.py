@@ -84,11 +84,13 @@ def main():
                 index = struct_dict[struct][2]
 
             print >>sys.stderr, "ix:", index, "struct:", struct, "pp:", pp
-            bps += [{"i": i, "j": j, "p": math.sqrt(prob), "ix": index}]
+            bps += [{"i": i, "j": j, "p": "{:.3f}".format(math.sqrt(prob)), "ix": index}]
 
 
     structs = struct_dict.values()
     structs.sort(key=lambda x: -x[1])
+    base_probs = dict([(i, "{:.3f}".format(j)) for (i,j) in base_probs.items()])
+
     structs = [{"struct": st[0], "sprob": st[1], "ix": st[2]} for st in structs]
     print json.dumps({"seq": seq, "structs": structs, "bps": bps, "baseProbs": base_probs.items()}, indent=2)
 

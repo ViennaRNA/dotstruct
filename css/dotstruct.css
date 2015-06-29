@@ -1,63 +1,187 @@
-#dotplot {
+text.sequence-text {
+    font-weight: normal;
+    font-size: 8px;
+    font-family: Tahoma, Geneva, sans-serif;
+    color: rgb(100,100,100);
+    pointer-events: none;
 }
 
-.diagonal-line {
+line.diagonal-line {
     stroke: #888;
     stroke-width: 2;
 }
 
-.highlight-circle {
+circle.highlight-circle {
     stroke: black;
     stroke-width: 1;
     fill: black;
     opacity: 0;
 }
 
-.guide-line {
+line.guide-line {
     opacity: 0.0;
     stroke: #ccc;
     stroke-width; 2;
 }
 
-.text-highlight-rect {
+rect.text-highlight-rect {
     stroke-width: 1;
-    fill: black;
-    stroke: black;
+    fill: white;
+    stroke: white;
     opacity: 0.3;
     visibility: hidden;
 }
 
-.rna-base {
+circle.rna-base {
     opacity: 0.2;
     fill: white;
     stroke-width: 0.5;
     stroke: black;
 }
 
-.selected {
+circle.selected {
+    fill: black;
+    stroke: black;
     opacity: 1.0;
 }
 
-.text-selected {
+rect.text-selected {
     visibility: visible;
 }
 
-.guide-selected { 
+line.guide-selected { 
     opacity: 1.0;
 }
 
-.structure-background-rect {
-    fill: transparent;
+rect.structure-background-rect {
+    fill: white;
     stroke-width: 0.5;
     stroke: black;
     opacity: 0.05;
 }
 
-.from-this-structure {
+circle.from-this-structure {
     stroke-width: 2;
     stroke: black;
 }
 
 text {
     font: 8px sans-serif;
+}
+
+circle.node {
+  stroke: #ccc;
+  stroke-width: 1px;
+  opacity: 1;
+}
+
+circle.node.label {
+    stroke: transparent;
+    stroke-width: 0;
+    fill: white;
+}
+
+circle.outline_node {
+    stroke-width: 1px;
+    fill: red;
+}
+
+circle.protein {
+    fill: gray;
+    fill-opacity: 0.5;
+    stroke-width: 4;
+}
+
+circle.hidden_outline {
+    stroke-width: 0px;
+}
+
+line.link {
+  stroke: #999;
+  stroke-opacity: 0.8;
+  stroke-width: 2;
+}
+
+line.basepair {
+  stroke: red;
+}
+
+line.intermolecule {
+  stroke: blue;
+}
+
+line.chain_chain {
+  stroke-dasharray: 3,3;
+}
+
+line.fake {
+  stroke: green;
+}
+
+.transparent {
+    fill: transparent;
+    stroke-width: 0;
+    stroke-opacity: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.drag_line {
+  stroke: #999;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.drag_line_hidden {
+  stroke: #999;
+  stroke-width: 0;
+  pointer-events: none;
+}
+
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 4px;
+    pointer-events: none;
+          }
+
+text.node-label {
+    font-weight: bold;
+    font-family: Tahoma, Geneva, sans-serif;
+    color: rgb(100,100,100);
+    pointer-events: none;
+}
+
+text {
+    pointer-events: none;
+}
+
+g.gnode {
+
+}
+
+circle.outline_node.selected {
+    visibility: visible;
+}
+
+circle.outline_node {
+    visibility: hidden;
+}
+
+.brush .extent {
+  fill-opacity: .1;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
