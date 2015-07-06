@@ -1,3 +1,6 @@
+.zoom-rect {
+    opacity: 0;
+}
 
 .svg-container {
     position: relative;
@@ -56,7 +59,7 @@ rect.text-highlight-rect {
 }
 
 circle.rna-base {
-    opacity: 0.2;
+    opacity: 0.5;
     fill: white;
     stroke-width: 0.5;
     stroke: black;
@@ -77,7 +80,7 @@ rect.structure-background-rect {
     fill: white;
     stroke-width: 0.5;
     stroke: black;
-    opacity: 0.05;
+    opacity: 0.5;
 }
 
 circle.from-this-structure {

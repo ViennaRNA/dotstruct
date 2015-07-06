@@ -25,14 +25,16 @@ function dotStructLayout(element) {
                .style('position', 'absolute');
                */
 
-
             var zoomG = selection.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
             .attr('class', 'main')
 
+            zoomG.append('svg:rect')
+            .attr('width', width*2)
+            .attr('height', height)
+            .classed('zoom-rect', true)
 
-            var rootG = zoomG.append('g')
-
+            var rootG = zoomG.append('g').attr('id', 'root-g');
 
             function zoom() {
                 var t = d3.event.translate,
@@ -47,7 +49,6 @@ function dotStructLayout(element) {
 
             zoomG.call(zoomer)
 
-
             d3.select('body')
             .on('keydown', function() {
                 if (d3.event.keyCode === 67) { //c key
@@ -59,7 +60,7 @@ function dotStructLayout(element) {
             });
 
             var gUnder = rootG.append('g');
-            var gMiddle = rootG.append('g').attr('pointer-events', 'all');
+            var gMiddle = rootG.append('g').attr('pointer-events', 'all').attr('transform', 'translate(' + width + ',0)').attr('id', 'middle-layer');
             var gMain = rootG.append('g').attr('pointer-events', 'all');
 
             function highlightNucleotide(num1, prefix) {
@@ -156,8 +157,6 @@ function dotStructLayout(element) {
             //.domain(d3.extent(data.bps.map(function(d) { return d.p; })))
             .domain([0, 1])
             .range([0, xScale.rangeBand()]);
-
-
 
             gMain.selectAll(".topXLabel")
             .data(jSet)
