@@ -456,6 +456,8 @@ function dotStructLayout(element) {
                     .attr("height", function(d) { return Math.max(0, d.dy); });
                 }
 
+                console.log('root', root);
+
                 var treemapGnodes = gMiddle.datum(root).selectAll(".treemapNode")
                 .data(treemap.nodes)
                 .enter()

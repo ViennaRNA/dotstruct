@@ -72,7 +72,7 @@ def main():
         base_probs[i] += prob
         base_probs[j] += prob
 
-        if prob > .08:
+        if prob > .001:
             struct, energy = bp_to_seq[(i,j)]
             pp = math.exp((pfe - (energy / 100.)) / .616310776)
 
