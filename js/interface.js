@@ -84,6 +84,18 @@ function savePNG() {
     return;
 }
 
+function combineDotAndStruct() {
+    var svg = document.getElementById('dotplot'); 
+
+    var gMiddle = d3.select('#middle-layer');
+    var gRoot = d3.select('#root-g');
+
+    if (gMiddle.attr('transform') == 'translate(0,0)')
+        gMiddle.transition().attr('transform', 'translate(' + gRoot.node().getBBox().width + ',0)').attr('opacity',1.0);
+    else
+        gMiddle.transition().attr('transform', 'translate(0,0)').attr('opacity', 0.4);
+}
+
 function saveSVG() {
     saveSvgAsPng(document.getElementById('dotplot'), 'dotplot.png', 4);
     return;
