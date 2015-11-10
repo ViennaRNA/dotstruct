@@ -439,11 +439,7 @@ function dotStructLayout(element) {
                 gMain.selectAll(selectText).classed('visible', false)
             }
 
-            var fornaContainerOptions = {'applyForce': false, 
-                'allowPanningAndZooming': false,
-                "labelInterval":0,
-                "initialSize": [280, 280],
-                "transitionDuration": 0 };
+            console.log('root:', root);
 
                 var treemap = d3.layout.treemap()
                 .size([innerWidth, innerHeight])

@@ -20,7 +20,7 @@ def main():
     num_args= 1
     parser = OptionParser(usage=usage)
 
-    #parser.add_option('-o', '--options', dest='some_option', default='yo', help="Place holder for a real option", type='str')
+    parser.add_option('-p', '--probability', dest='probability', default=0.01, help="The probability cutoff for displaying base pair points", type='float')
     #parser.add_option('-u', '--useless', dest='uselesss', default=False, action='store_true', help='Another useless option')
 
     (options, args) = parser.parse_args()
@@ -65,6 +65,7 @@ def main():
     struct_dict = {}
     base_probs = col.defaultdict(float)
 
+    print >>sys.stderr, "probability:", options.probability
     for i,j in it.combinations(range(1, len(seq)+1), 2):
         prob = RNA.doubleP_getitem(prob_matrix, 
                                    RNA.intP_getitem(RNA.cvar.iindx, i) - j)
@@ -72,7 +73,7 @@ def main():
         base_probs[i] += prob
         base_probs[j] += prob
 
-        if prob > .001:
+        if prob > options.probability:
             struct, energy = bp_to_seq[(i,j)]
             pp = math.exp((pfe - (energy / 100.)) / .616310776)
 
