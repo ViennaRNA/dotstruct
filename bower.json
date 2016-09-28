@@ -7,7 +7,8 @@
   ],
   "description": "An enhanced RNA dotplot showing the associated structures.",
   "main": [
-    "dist/scripts/dotstruct.js"
+    "dist/scripts/dotstruct.js",
+    "dist/styles/dotstruct.css"
   ],
   "moduleType": "es6",
   "keywords": [],
