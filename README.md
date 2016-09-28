@@ -1,20 +1,24 @@
-Usage:
+# DotStruct Plot
 
-    python scripts/dotplus.py GGAACGCCGCGGUCAGCUCGGCUGCUGCGAAGAGUCUCUGUUGUUCC > data/stuff.json
+## Comile Project
 
-Start up a web server in the dotstruct directory:
+``` bash
+bower install
+npm install 
+```
 
-    python -m SimpleHTTPServer
+For debugging run `gulp serve`, to get a distribution javascript file run `gulp build`.
 
-Go to:
-
-    http://127.0.0.1:8008
-
-Or:
-    
-    http://www.tbi.univie.ac.at/~pkerp/dotstruct/
-
-Load `data/stuff.json` 
-
-
-Enjoy!
+## Generate Data Files
+``` bash
+python scripts/dotplus.py GGAACGCCGCGGUCAGCUCGGCUGCUGCGAAGAGUCUCUGUUGUUCC > data/4o26.json
+```
+```bash
+python scripts/dotplus.py UGAAACGGAGGAGACGUUACAGCAACGUGUCAGCUGAAAUGAUGGGCGUAGACGCACGUCAGCGGCGGAAAUGGUUUCUAUCAAAAUGAAAGUGUUUAGAGAUUUUCCUCAAGUUUCA > data/4o26.json
+```
+```bash
+python scripts/dotplus.py AGGUCUCGGAUGUUAUUUCUACCAGGUGAAUGAUCUAUUGACGCUCGCCAAACAUGGGCGACCCGAGACCU > data/tristable.json
+```
+```bash
+python scripts/dotplus.py UACACUGCCCAGGUAGUGCUUACACUACAACUGUAGUGGG  > data/bistable.json
+```

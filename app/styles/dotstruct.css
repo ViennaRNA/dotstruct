@@ -1,3 +1,97 @@
+.zoom-rect {
+    opacity: 0;
+}
+
+.svg-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.svg-content-responsive {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+text.scatter-dots-text {
+    text-anchor: end;
+    visibility: hidden;
+}
+
+text.scatter-dots-text.visible {
+    visibility: visible;
+}
+
+text.sequence-text {
+    font-weight: normal;
+    font-size: 8px;
+    font-family: Tahoma, Geneva, sans-serif;
+    color: rgb(100,100,100);
+    pointer-events: none;
+}
+
+line.diagonal-line {
+    stroke: #888;
+    stroke-width: 2;
+    opacity: 0.5;
+}
+
+circle.highlight-circle {
+    stroke: black;
+    stroke-width: 1;
+    fill: black;
+    opacity: 0;
+}
+
+line.guide-line {
+    opacity: 0.0;
+    stroke: #ccc;
+    stroke-width: 2;
+}
+
+rect.text-highlight-rect {
+    stroke-width: 1;
+    fill: white;
+    stroke: white;
+    opacity: 0.3;
+    visibility: hidden;
+}
+
+circle.rna-base {
+    opacity: 0.5;
+    fill: white;
+    stroke-width: 0.5;
+    stroke: black;
+}
+
+circle.selected {
+    fill: black;
+    stroke: black;
+    opacity: 1.0;
+}
+
+
+line.guide-selected {
+    opacity: 1.0;
+}
+
+rect.structure-background-rect {
+    fill: white;
+    stroke-width: 0.5;
+    stroke: black;
+    opacity: 0.5;
+}
+
+circle.from-this-structure {
+    stroke-width: 2;
+    stroke: black;
+}
+
+text {
+    font: 8px sans-serif;
+}
+
 circle.node {
   stroke: #ccc;
   stroke-width: 1px;
@@ -113,4 +207,8 @@ circle.outline_node {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.visible {
+    visibility: visible;
 }

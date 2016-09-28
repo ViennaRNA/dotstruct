@@ -1,0 +1,26 @@
+{
+  "name": "dotstruct",
+  "version": "0.8.1",
+  "homepage": "https://github.com/pkerpedjiev/dotstruct",
+  "authors": [
+    "Peter Kerpedjiev <pkerp@tbi.univie.ac.at>"
+  ],
+  "description": "An enhanced RNA dotplot showing the associated structures.",
+  "main": [
+    "dist/scripts/dotstruct.js"
+  ],
+  "moduleType": "es6",
+  "keywords": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7"
+  }
+}

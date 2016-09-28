@@ -1,5 +1,11 @@
-function dotStructLayout(element) {
+import d3 from 'd3';
+import {rnaPlot} from 'fornac';
+
+import '../styles/dotstruct.css';
+
+export function dotStructLayout() {
     var width = 480;
+    var height = 300;
     var containers = {};
     var x, y, r;
 
@@ -54,8 +60,8 @@ function dotStructLayout(element) {
                 if (d3.event.keyCode === 67) { //c key
                     zoomer.translate([0,0]);
                     zoomer.scale(1);
-                
-                    rootG.attr('transform', 'translate(0,0)scale(1)'); 
+
+                    rootG.attr('transform', 'translate(0,0)scale(1)');
                 }
             });
 
@@ -137,18 +143,18 @@ function dotStructLayout(element) {
             var iSet = d3.set(data.bps.map(function(d) { return +d.i; })).values();
             var jSet = d3.set(data.bps.map(function(d) { return +d.j; })).values();
 
-            structIxs = data.structs.map(function(d) { return d.ix; });
+            var structIxs = data.structs.map(function(d) { return d.ix; });
 
             var color = d3.scale.category10().domain(structIxs);
 
             var structLength = data.structs[0].struct.length;
             var sequenceNumbers = Array.apply(0, Array(structLength)).map(function(x,y) { return y+1; });
 
-            xScale = d3.scale.ordinal()
+            var xScale = d3.scale.ordinal()
             .domain([' '].concat(sequenceNumbers).concat([' ']) )
             .rangeRoundBands([ 0, innerWidth ]);
 
-            yScale = d3.scale.ordinal()
+            var yScale = d3.scale.ordinal()
             .domain([' '].concat(sequenceNumbers).concat([' ']))
             .rangeRoundBands([ 0, innerHeight ]);
 
@@ -303,8 +309,8 @@ function dotStructLayout(element) {
             .attr('height', yScale.rangeBand())
             .attr('fill', function(d) { return bpColors(d[1]); });
 
-            highlightSeq = function(d, node, prefix ) {
-                svgRect = node.getBBox();
+            var highlightSeq = function(d, node, prefix ) {
+                var svgRect = node.getBBox();
                 var parentNode = d3.select(node.parentNode);
 
                 parentNode.append('rect')
@@ -321,8 +327,8 @@ function dotStructLayout(element) {
             .data(seq)
             .enter()
             .append('text')
-            .attr('x', function(d) { 
-                return xScale(d.i); 
+            .attr('x', function(d) {
+                return xScale(d.i);
             })
             .attr('y', -20)
             .classed('sequence-text', true)
@@ -334,8 +340,8 @@ function dotStructLayout(element) {
             .enter()
             .append('text')
             .classed('sequence-text', true)
-            .attr('x', function(d) { 
-                return xScale(d.i); 
+            .attr('x', function(d) {
+                return xScale(d.i);
             })
             .attr('y', innerHeight + 25)
             .text(function(d) { return d.s; })
@@ -363,8 +369,8 @@ function dotStructLayout(element) {
 
             ////////////////////////////////////////////////////////////
             var root = {"name": "graph",
-                "children": data.structs.map(function(d) { 
-                    return {"name": d.ix, 
+                "children": data.structs.map(function(d) {
+                    return {"name": d.ix,
                         "structure": d.struct,
                         "sequence": self.data.seq,
                         "size": +d.sprob * 100 };
@@ -379,7 +385,7 @@ function dotStructLayout(element) {
             .classed('diagonal-line', true);
 
 
-            function divName(d) { 
+            function divName(d) {
                 return "subopt" + d.name;
             }
 
@@ -459,7 +465,7 @@ function dotStructLayout(element) {
                 .append('g')
                 .attr('class', 'treemapNode')
                 .attr('id', divName)
-                .each(function(d) { 
+                .each(function(d) {
                     // create a background rectangle for each RNA structure
                     d3.select(this).attr('transform', function(d) { return 'translate(' + d.x + "," + d.y + ')' })
                     .append('rect')
@@ -467,8 +473,8 @@ function dotStructLayout(element) {
                     .classed('structure-background-rect', true)
                     .call(positionTreemapRect)
 
-                    var chart = rnaPlot()
-                    .width( Math.max(0, d.dx))
+                    var chart = rnaPlot();
+                    chart.width( Math.max(0, d.dx))
                     .height( Math.max(0, d.dy))
                     .labelInterval(0)
                     .rnaEdgePadding(10)
@@ -538,4 +544,3 @@ function dotStructLayout(element) {
 
     return chart;
 }
-
