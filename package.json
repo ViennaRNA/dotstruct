@@ -1,0 +1,64 @@
+{
+  "name": "dotstruct",
+  "version": "0.1.0",
+  "description": "An enhanced RNA dotplot showing the associated structures.",
+  "author": "Peter Kerpedjiev <pkerp@tbi.univie.ac.at>",
+  "main": "dist/scripts/dotstruct.js",
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pkerpedjiev/dotstruct"
+  },
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "devDependencies": {
+    "babel-core": "~6.5.2",
+    "babel-loader": "~6.2.3",
+    "babel-preset-es2015": "~6.5.0",
+    "browser-sync": "~2.11.1",
+    "css-loader": "^0.25.0",
+    "d3": "^3.5.5",
+    "del": "~2.2.0",
+    "es6-promise": "~3.1.2",
+    "fornac": "git+ssh://git@github.com/pkerpedjiev/fornac.git#develop",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "~3.1.0",
+    "gulp-babel": "~6.1.2",
+    "gulp-cache": "^0.4.2",
+    "gulp-cssnano": "^2.1.1",
+    "gulp-debug": "^2.1.2",
+    "gulp-htmlmin": "^1.3.0",
+    "gulp-if": "^2.0.0",
+    "gulp-imagemin": "^2.4.0",
+    "gulp-load-plugins": "~1.2.0",
+    "gulp-plumber": "~1.1.0",
+    "gulp-size": "^2.0.0",
+    "gulp-sourcemaps": "~1.6.0",
+    "gulp-uglify": "^1.5.3",
+    "gulp-useref": "^3.0.7",
+    "gulp-webpack": "~1.5.0",
+    "main-bower-files": "~2.11.1",
+    "style-loader": "^0.13.1",
+    "webpack": "~1.12.14",
+    "webpack-stream": "~3.1.0",
+    "wiredep": "~3.0.0"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true,
+      "browser": true
+    },
+    "rules": {
+      "quotes": [
+        2,
+        "single"
+      ]
+    }
+  },
+  "dependencies": {
+  }
+}
