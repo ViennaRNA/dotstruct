@@ -1,6 +1,6 @@
 # DotStruct Plot
 
-## Comile Project
+## Compile Project
 
 ``` bash
 bower install
